@@ -8,6 +8,25 @@ const contadorCarrito = document.getElementById("contador-carrito");
 const spanCliente = document.getElementById("nombre-cliente");
 const paginacionContainer = document.getElementById("paginacion");
 
+// Filtros DOM
+const filtroTipoContainer = document.getElementById("filtro-tipo");
+const precioMin = document.getElementById("precio-min");
+const precioMax = document.getElementById("precio-max");
+const ordenarSelect = document.getElementById("ordenar");
+const limpiarFiltrosBtn = document.getElementById("limpiar-filtros");
+
+// Estado de filtros
+let filtros = {
+  tipo: 'todos',
+  precioMin: null,
+  precioMax: null,
+  orden: 'recientes',
+  busqueda: ''
+};
+
+// Tipos de productos
+let tipos = [];
+
 //estado del carrito
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
@@ -20,6 +39,26 @@ let productos = [
   { id: 5, nombre: "Buzo Gris",     tipo: "Buzo",   precio: 9500,  ruta_img: "img/Buzo_Gris.jpg",     cantidad: 0 },
   { id: 6, nombre: "Buzo Rojo",     tipo: "Buzo",   precio: 10000, ruta_img: "img/Buzo_Rojo.jpg",     cantidad: 0 }
 ];
+
+// Cargar tipos desde la API
+async function cargarTipos() {
+  try {
+    const res = await fetch(`${API_BASE}/tipos`);
+    const data = await res.json();
+    tipos = data.data || data;
+    
+    // Renderizar pills de tipos
+    if (filtroTipoContainer) {
+      let pillsHTML = `<button class="filtro-pill active" data-tipo="todos">Todos</button>`;
+      tipos.forEach(tipo => {
+        pillsHTML += `<button class="filtro-pill" data-tipo="${tipo.id}">${tipo.nombre}</button>`;
+      });
+      filtroTipoContainer.innerHTML = pillsHTML;
+    }
+  } catch (error) {
+    console.error("Error al cargar tipos:", error);
+  }
+}
 
 // Mostrar lista de productos
 function mostrarLista(array) {
@@ -114,7 +153,11 @@ async function agregarACarrito(id) {
   
   // Verificar que no exceda el stock
   if (cantidadEnCarrito >= producto.stock) {
-    alert("No hay más stock disponible de este producto");
+    if (typeof toastCarritoError === 'function') {
+      toastCarritoError("No hay más stock disponible de este producto");
+    } else {
+      alert("No hay más stock disponible de este producto");
+    }
     return;
   }
 
@@ -126,6 +169,12 @@ async function agregarACarrito(id) {
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
   actualizarContador();
+  
+  // Mostrar toast de éxito
+  if (typeof toastCarrito === 'function') {
+    toastCarrito(producto.titulo || producto.nombre);
+  }
+  
   const carritoExiste = await obtenerCarritoActivo(cliente.id);
   if (carritoExiste) {
     // obtener cantidad siempre
@@ -233,6 +282,19 @@ async function cargarProductos(page = 1, buscar = '') {
       url += `&buscar=${encodeURIComponent(buscar)}`;
     }
 
+    // Agregar filtro de tipo si está seleccionado y no es "todos"
+    if (filtros.tipo !== 'todos') {
+      url += `&tipo=${filtros.tipo}`;
+    }
+
+    // Agregar rangos de precio si están especificados
+    if (filtros.precioMin !== null && filtros.precioMin !== '') {
+      url += `&precio_min=${filtros.precioMin}`;
+    }
+    if (filtros.precioMax !== null && filtros.precioMax !== '') {
+      url += `&precio_max=${filtros.precioMax}`;
+    }
+
     const res = await fetch(url);
     if (!res.ok) throw new Error("HTTP " + res.status);
 
@@ -244,6 +306,8 @@ async function cargarProductos(page = 1, buscar = '') {
 
     localStorage.setItem('productos', JSON.stringify(productos));
 
+    // Aplicar ordenamiento
+    aplicarOrdenamiento(productos);
     mostrarLista(productos);
     renderPaginacion(data.pagination);
   } catch (error) {
@@ -265,5 +329,149 @@ if (paginacionContainer) {
   });
 }
 
-// Y en lugar de mostrarLista(productos), llamar a:
+// ========================================
+// FILTROS Y ORDENAMIENTO
+// ========================================
+
+// Aplicar ordenamiento a un array de productos
+function aplicarOrdenamiento(array) {
+  switch (filtros.orden) {
+    case 'precio-asc':
+      array.sort((a, b) => parseFloat(a.precio) - parseFloat(b.precio));
+      break;
+    case 'precio-desc':
+      array.sort((a, b) => parseFloat(b.precio) - parseFloat(a.precio));
+      break;
+    case 'nombre-asc':
+      array.sort((a, b) => (a.titulo || a.nombre).localeCompare(b.titulo || b.nombre));
+      break;
+    case 'nombre-desc':
+      array.sort((a, b) => (b.titulo || b.nombre).localeCompare(a.titulo || a.nombre));
+      break;
+    case 'recientes':
+    default:
+      array.sort((a, b) => b.id - a.id);
+      break;
+  }
+}
+
+// Recargar productos con filtros aplicados (vuelve a página 1)
+function filtrarYOrdenarProductos() {
+  const buscar = barraBusqueda ? barraBusqueda.value.trim() : '';
+  cargarProductos(1, buscar);
+}
+
+// Filtrar productos localmente (para cuando ya están cargados)
+function filtrarLocalmente(array) {
+  let resultado = [...array];
+  
+  // Filtrar por tipo
+  if (filtros.tipo !== 'todos') {
+    resultado = resultado.filter(p => p.id_tipo === parseInt(filtros.tipo));
+  }
+  
+  // Filtrar por precio mínimo
+  if (filtros.precioMin !== null && filtros.precioMin !== '') {
+    resultado = resultado.filter(p => parseFloat(p.precio) >= parseFloat(filtros.precioMin));
+  }
+  
+  // Filtrar por precio máximo
+  if (filtros.precioMax !== null && filtros.precioMax !== '') {
+    resultado = resultado.filter(p => parseFloat(p.precio) <= parseFloat(filtros.precioMax));
+  }
+  
+  // Filtrar por búsqueda
+  if (filtros.busqueda) {
+    const busqueda = filtros.busqueda.toLowerCase();
+    resultado = resultado.filter(p => 
+      (p.titulo || p.nombre || '').toLowerCase().includes(busqueda)
+    );
+  }
+  
+  // Ordenar
+  aplicarOrdenamiento(resultado);
+  mostrarLista(resultado);
+}
+
+// Event listeners para filtros
+if (filtroTipoContainer) {
+  filtroTipoContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('filtro-pill')) {
+      // Quitar active de todos
+      filtroTipoContainer.querySelectorAll('.filtro-pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      // Agregar active al clickeado
+      e.target.classList.add('active');
+      filtros.tipo = e.target.dataset.tipo;
+      filtrarYOrdenarProductos();
+    }
+  });
+}
+
+if (precioMin) {
+  precioMin.addEventListener('input', (e) => {
+    filtros.precioMin = e.target.value;
+    filtrarYOrdenarProductos();
+  });
+}
+
+if (precioMax) {
+  precioMax.addEventListener('input', (e) => {
+    filtros.precioMax = e.target.value;
+    filtrarYOrdenarProductos();
+  });
+}
+
+if (ordenarSelect) {
+  ordenarSelect.addEventListener('change', (e) => {
+    filtros.orden = e.target.value;
+    // El ordenamiento se aplica localmente sin recargar desde API
+    aplicarOrdenamiento(productos);
+    mostrarLista(productos);
+  });
+}
+
+if (limpiarFiltrosBtn) {
+  limpiarFiltrosBtn.addEventListener('click', () => {
+    // Resetear estado
+    filtros = {
+      tipo: 'todos',
+      precioMin: null,
+      precioMax: null,
+      orden: 'recientes',
+      busqueda: ''
+    };
+    
+    // Resetear UI
+    if (filtroTipoContainer) {
+      filtroTipoContainer.querySelectorAll('.filtro-pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      filtroTipoContainer.querySelector('[data-tipo="todos"]')?.classList.add('active');
+    }
+    if (precioMin) precioMin.value = '';
+    if (precioMax) precioMax.value = '';
+    if (ordenarSelect) ordenarSelect.value = 'recientes';
+    if (barraBusqueda) barraBusqueda.value = '';
+    
+    // Recargar productos sin filtros (página 1)
+    cargarProductos(1, '');
+    
+    if (typeof toastInfo === 'function') {
+      toastInfo('Se limpiaron todos los filtros', 'Filtros');
+    }
+  });
+}
+
+// Actualizar búsqueda en filtros
+if (barraBusqueda) {
+  barraBusqueda.addEventListener('input', (e) => {
+    filtros.busqueda = e.target.value;
+    filtrarYOrdenarProductos();
+  });
+}
+
+// Inicializar: cargar tipos y productos
+cargarTipos();
 cargarProductos();

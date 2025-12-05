@@ -7,9 +7,18 @@ updateButtonIcon(savedTheme);
 cambiarTemaBtn?.addEventListener("click", () => {
   const actual = document.documentElement.getAttribute("data-theme") || "light";
   const siguiente = actual === "light" ? "dark" : "light";
+  
+  // Activar transición suave
+  document.documentElement.classList.add('theme-transition');
+  
   document.documentElement.setAttribute("data-theme", siguiente);
   localStorage.setItem("theme", siguiente);
   updateButtonIcon(siguiente);
+  
+  // Desactivar transición después de completarse
+  setTimeout(() => {
+    document.documentElement.classList.remove('theme-transition');
+  }, 400);
 });
 
 function updateButtonIcon(theme) {

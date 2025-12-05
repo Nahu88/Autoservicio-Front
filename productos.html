@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/componentes.css" />
   <link rel="stylesheet" href="css/paginas.css/productos.css" />
+  <script defer src="js/toast.js"></script>
   <script defer src="js/main.js"></script>
   <script defer src="js/tema.js"></script>
 </head>
@@ -34,7 +35,41 @@
     </nav>
   </header>
   <main>
-    <p class="muted">Bienvenido,<strong><span id="nombre-cliente">.</span></strong></p>    
+    <p class="muted">Bienvenido,<strong><span id="nombre-cliente">.</span></strong></p>
+    
+    <!-- Filtros y ordenamiento -->
+    <div class="filtros-container">
+      <div class="filtro-grupo">
+        <span class="filtro-label">Tipo:</span>
+        <div class="filtro-pills" id="filtro-tipo">
+          <!-- Se cargan dinámicamente desde la API -->
+          <button class="filtro-pill active" data-tipo="todos">Cargando...</button>
+        </div>
+      </div>
+      
+      <div class="filtro-grupo">
+        <span class="filtro-label">Precio:</span>
+        <div class="filtro-rango">
+          <input type="number" id="precio-min" placeholder="Min" min="0">
+          <span>-</span>
+          <input type="number" id="precio-max" placeholder="Max" min="0">
+        </div>
+      </div>
+      
+      <div class="filtro-grupo">
+        <span class="filtro-label">Ordenar:</span>
+        <select class="filtro-select" id="ordenar">
+          <option value="recientes">Más recientes</option>
+          <option value="precio-asc">Precio: menor a mayor</option>
+          <option value="precio-desc">Precio: mayor a menor</option>
+          <option value="nombre-asc">Nombre: A-Z</option>
+          <option value="nombre-desc">Nombre: Z-A</option>
+        </select>
+      </div>
+      
+      <button class="btn-limpiar-filtros" id="limpiar-filtros">✕ Limpiar</button>
+    </div>
+    
     <section id="contenedor-productos"></section>
 
     <div id="paginacion" class="paginacion"></div>
