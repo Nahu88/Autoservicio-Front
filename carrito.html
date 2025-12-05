@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tu carrito</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/componentes.css" />
+  <link rel="stylesheet" href="css/paginas.css/carrito.css" />
+  <script defer src="js/tema.js"></script>
+  <script defer src="js/carrito.js"></script>
+</head>
+<body>
+  <header>
+    <h2>Carrito de compras</h2>
+    <button id="cambiar-tema" title="Cambiar tema">🌙</button>
+  </header>
+
+  <main id="contenedor-carrito"></main>
+
+  <span class="msg-error"></span>
+
+  <footer>
+    <a href="productos.html"><button>← Volver</button></a>
+    <button onclick="vaciarCarrito()">Vaciar carrito</button>
+    <button onclick="confirmarCompra()">Confirmar compra</button>
+  </footer>
+</body>
+</html>

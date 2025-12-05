@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Autoservicio - Productos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="img/favicon.png">
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/componentes.css" />
+  <link rel="stylesheet" href="css/paginas.css/productos.css" />
+  <script defer src="js/main.js"></script>
+  <script defer src="js/tema.js"></script>
+</head>
+<body>
+  <header>
+    <button id="cambiar-tema" title="Cambiar tema">🌙</button>
+
+    <div class="marca">
+      <span class="nombre-app"> Autoservicio </span>
+    </div>
+
+    <div class="controls-inline">
+      <label class="sr-only" for="barra-busqueda">Buscar producto</label>
+      <input type="text" id="barra-busqueda" placeholder="Buscar remeras o buzos…">
+      <span id="contador-carrito">Carrito: 0</span>
+    </div>
+
+    <nav>
+      <a class="nav-link" href="index.html">Inicio</a>
+      <a class="nav-link" href="productos.html" aria-current="page">Productos</a>
+      <a class="nav-link" href="carrito.html">Carrito</a>
+      <a class="nav-link admin-link" href="http://localhost:4000/api/admin/login-view" target="_blank">🔐 Admin</a>
+    </nav>
+  </header>
+  <main>
+    <p class="muted">Bienvenido,<strong><span id="nombre-cliente">.</span></strong></p>    
+    <section id="contenedor-productos"></section>
+
+    <div id="paginacion" class="paginacion"></div>
+  </main>
+  <footer>
+    <small>© 2025 · Autoservicio </small>
+    
+  </footer>
+</body>
+</html>

@@ -1,0 +1,99 @@
+/* Layout general */
+header, footer{
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+header {
+  position: sticky; 
+  top: 0; 
+  z-index: 10;
+  padding: 14px 200px;
+  display: grid;
+  grid-template-columns: auto 1fr; /* Marca | Controles */
+  gap: 12px;
+  align-items: center;
+}
+.marca { 
+  grid-column: 1; 
+  justify-self: start; 
+}
+header .controls-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  gap: 20px;               
+  width: 100%;
+  max-width: 900px;        
+  margin: 0 auto;
+}
+
+/* Botón de tema - Flotante */
+#cambiar-tema {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  font-size: 1.4rem;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#cambiar-tema:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+/* nav ocupa la fila de abajo */
+header nav { grid-column: 1 / -1; }
+header .marca{ display: flex; align-items: center; gap: 10px; }
+header .marca .nombre-app{ font-weight: 700; font-size: 1.1rem; }
+header nav{ display: flex; gap: 10px; align-items: center; }
+
+/* controles genéricos en línea */
+.controls-inline{
+  display: grid;
+  grid-template-columns: 1fr auto;  
+  gap: 10px;
+  align-items: center;
+}
+#barra-busqueda{ width: 50%; height: 28px;}
+
+/* Contenedor principal */
+main{
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+footer{
+  margin-top: 40px; padding: 16px;
+  border-top: 1px solid var(--border);
+  text-align: center; color: var(--muted);
+}
+
+/* Responsive (global) */
+@media (max-width: 768px){
+  header .controls-inline{
+    grid-template-columns: 1fr; 
+    justify-self: stretch;
+  }
+  header nav{ justify-content: center; flex-wrap: wrap; }
+  main{ padding: 0 12px; }
+}
+
+
+@media print{
+  header, footer, nav, .no-print{ display:none !important; }
+  body{ background:#fff; }
+}

@@ -1,0 +1,29 @@
+.bienvenida{
+  max-width: 520px;
+  margin: clamp(24px, 5vw, 64px) auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(16px, 3.5vw, 28px);
+  box-shadow: var(--shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bienvenida h1{ margin-top: 0; }
+
+.bienvenida input {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 12px 8px;
+  border: 2px solid var(--ring);
+  width: 50%;
+}
+
+.container__search-box {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 8px;
+}
