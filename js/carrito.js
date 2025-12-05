@@ -1,4 +1,5 @@
 const contenedorCarrito = document.getElementById("contenedor-carrito");
+const resumenCarrito = document.getElementById("resumen");
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 const idCarrito = parseInt(localStorage.getItem("carrito_id")) || null;
 
@@ -6,26 +7,102 @@ const textError = document.querySelector(".msg-error");
 
 // Mostrar carrito
 function mostrarCarrito() {
+  if (carrito.length === 0) {
+    contenedorCarrito.innerHTML = `
+      <div class="carrito-vacio">
+        <div class="carrito-vacio-icon">🛒</div>
+        <h3>Tu carrito está vacío</h3>
+        <p>Agrega productos para comenzar</p>
+        <a href="productos.html"><button>Ver productos</button></a>
+      </div>`;
+    resumenCarrito.innerHTML = '';
+    return;
+  }
+
   contenedorCarrito.innerHTML = "";
+  let total = 0;
+  
   carrito.forEach((p, i) => {
+    const subtotal = p.precio * p.cantidad;
+    total += subtotal;
+    
     contenedorCarrito.innerHTML += `
-      <div class="bloque-item">
-        <p>${p.titulo || p.nombre} x${p.cantidad} - $${p.precio * p.cantidad}</p>
-        <button onclick="eliminar(${i})">❌</button>
+      <div class="bloque-item" data-index="${i}">
+        <img src="${p.url_image || 'img/placeholder.jpg'}" alt="${p.titulo || p.nombre}" class="item-imagen">
+        <div class="item-info">
+          <span class="item-nombre">${p.titulo || p.nombre}</span>
+          <span class="item-precio-unit">$${Number(p.precio).toLocaleString()} c/u</span>
+        </div>
+        <div class="item-cantidad">
+          <button onclick="cambiarCantidad(${i}, -1)">−</button>
+          <span class="qty">${p.cantidad}</span>
+          <button onclick="cambiarCantidad(${i}, 1)">+</button>
+        </div>
+        <span class="item-subtotal">$${subtotal.toLocaleString()}</span>
+        <button class="btn-eliminar" onclick="eliminar(${i})" title="Eliminar">🗑️</button>
       </div>`;
   });
+
+  // Mostrar resumen
+  const cantidadItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+  resumenCarrito.innerHTML = `
+    <div class="resumen-linea">
+      <span>Productos (${cantidadItems})</span>
+      <span>$${total.toLocaleString()}</span>
+    </div>
+    <div class="resumen-linea">
+      <span>Envío</span>
+      <span style="color: #10b981; font-weight: 600;">Gratis</span>
+    </div>
+    <div class="resumen-total">
+      <span>Total</span>
+      <span class="total-precio">$${total.toLocaleString()}</span>
+    </div>`;
 }
 
-function eliminar(i) {
-  carrito.splice(i, 1);
+function cambiarCantidad(i, delta) {
+  const item = carrito[i];
+  const nuevaCantidad = item.cantidad + delta;
+  
+  if (nuevaCantidad <= 0) {
+    eliminar(i);
+    return;
+  }
+  
+  if (nuevaCantidad > item.stock) {
+    alert("No hay más stock disponible");
+    return;
+  }
+  
+  item.cantidad = nuevaCantidad;
   localStorage.setItem("carrito", JSON.stringify(carrito));
   mostrarCarrito();
 }
 
+function eliminar(i) {
+  const item = document.querySelector(`.bloque-item[data-index="${i}"]`);
+  if (item) {
+    item.classList.add('removing');
+    setTimeout(() => {
+      carrito.splice(i, 1);
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      mostrarCarrito();
+    }, 300);
+  } else {
+    carrito.splice(i, 1);
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    mostrarCarrito();
+  }
+}
+
 function vaciarCarrito() {
-  carrito = [];
-  localStorage.removeItem("carrito");
-  mostrarCarrito();
+  if (carrito.length === 0) return;
+  
+  if (confirm("¿Estás seguro de vaciar el carrito?")) {
+    carrito = [];
+    localStorage.removeItem("carrito");
+    mostrarCarrito();
+  }
 }
 
 

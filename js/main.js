@@ -140,6 +140,10 @@ async function agregarACarrito(id) {
 function actualizarContador() {
   const total = carrito.reduce((acc, p) => acc + p.cantidad, 0);
   contadorCarrito.innerText = `Carrito: ${total}`;
+  
+  // Animación bounce
+  contadorCarrito.classList.add('bounce');
+  setTimeout(() => contadorCarrito.classList.remove('bounce'), 500);
 }
 
 // Creo el carrito con estado "activo"

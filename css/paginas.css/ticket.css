@@ -1,16 +1,218 @@
-#ticket{
+/* Página del ticket */
+.ticket-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  box-shadow: var(--shadow);
+  border-bottom: 1px solid var(--border);
 }
-#ticket ul{ padding-left: 18px; }
 
-/* Print: estilos específicos del ticket */
-@media print{
-  #ticket{
-    border: 1px solid #000; box-shadow: none;
-    max-width: 720px; margin: 0 auto;
+.ticket-main {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 0 16px;
+  animation: fadeInUp 0.5s ease;
+}
+
+/* Mensaje de éxito */
+.ticket-success {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-size: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+}
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
+.ticket-success h2 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+.ticket-success p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Contenedor del ticket */
+.ticket-container {
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  position: relative;
+  animation: fadeInUp 0.5s ease backwards;
+  animation-delay: 0.2s;
+}
+.ticket-container::before,
+.ticket-container::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--bg);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.ticket-container::before {
+  left: -12px;
+  border-right: 2px dashed var(--border);
+}
+.ticket-container::after {
+  right: -12px;
+  border-left: 2px dashed var(--border);
+}
+
+/* Header del ticket */
+.ticket-header-info {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 16px;
+}
+.ticket-header-info h3 {
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+}
+.ticket-header-info .ticket-fecha {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.ticket-cliente {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+.ticket-cliente-icon {
+  font-size: 1.5rem;
+}
+.ticket-cliente strong {
+  color: var(--text);
+}
+
+/* Lista de items del ticket */
+.ticket-items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+}
+.ticket-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  animation: fadeIn 0.3s ease backwards;
+}
+.ticket-item:last-child {
+  border-bottom: none;
+}
+.ticket-item:nth-child(1) { animation-delay: 0.1s; }
+.ticket-item:nth-child(2) { animation-delay: 0.15s; }
+.ticket-item:nth-child(3) { animation-delay: 0.2s; }
+.ticket-item:nth-child(4) { animation-delay: 0.25s; }
+.ticket-item:nth-child(5) { animation-delay: 0.3s; }
+
+.ticket-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ticket-item-nombre {
+  font-weight: 600;
+}
+.ticket-item-cantidad {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.ticket-item-precio {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Total del ticket */
+.ticket-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0 0;
+  margin-top: 8px;
+  border-top: 2px dashed var(--border);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.ticket-total-precio {
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+
+/* Acciones del ticket */
+.ticket-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  animation: fadeInUp 0.5s ease backwards;
+  animation-delay: 0.4s;
+}
+.ticket-actions button {
+  flex: 1;
+}
+
+/* Print: estilos específicos del ticket */
+@media print {
+  .ticket-header,
+  .ticket-success,
+  .ticket-actions {
+    display: none !important;
+  }
+  .ticket-main {
+    margin: 0;
+    max-width: 100%;
+  }
+  .ticket-container {
+    border: 1px solid #000;
+    box-shadow: none;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .ticket-container::before,
+  .ticket-container::after {
+    display: none;
+  }
+}
+
+/* Responsive ticket */
+@media (max-width: 480px) {
+  .ticket-actions {
+    flex-direction: column;
+  }
+  .ticket-container {
+    padding: 16px;
+  }
+}
+

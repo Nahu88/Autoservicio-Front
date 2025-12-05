@@ -3,15 +3,53 @@ const carrito = JSON.parse(localStorage.getItem("ticket")) || [];
 const clienteData = JSON.parse(localStorage.getItem("cliente") || "{}");
 const nombreCliente = clienteData.nombre || "Cliente";
 
-let total = 0;
-let html = `<p>Cliente: <strong>${nombreCliente}</strong></p><ul>`;
-
-carrito.forEach(p => {
-  html += `<li>${p.titulo || p.nombre} x${p.cantidad} = $${p.precio * p.cantidad}</li>`;
-  total += p.precio * p.cantidad;
+// Formatear fecha
+const fecha = new Date();
+const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+  day: '2-digit',
+  month: '2-digit', 
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit'
 });
 
-html += `</ul><h3>Total: $${total}</h3>`;
+let total = 0;
+let itemsHtml = '';
+
+carrito.forEach(p => {
+  const subtotal = p.precio * p.cantidad;
+  total += subtotal;
+  itemsHtml += `
+    <li class="ticket-item">
+      <div class="ticket-item-info">
+        <span class="ticket-item-nombre">${p.titulo || p.nombre}</span>
+        <span class="ticket-item-cantidad">x${p.cantidad} · $${Number(p.precio).toLocaleString()} c/u</span>
+      </div>
+      <span class="ticket-item-precio">$${subtotal.toLocaleString()}</span>
+    </li>`;
+});
+
+const html = `
+  <div class="ticket-header-info">
+    <h3>🛍️ Autoservicio de Ropa</h3>
+    <span class="ticket-fecha">${fechaFormateada}</span>
+  </div>
+  
+  <div class="ticket-cliente">
+    <span class="ticket-cliente-icon">👤</span>
+    <span>Cliente: <strong>${nombreCliente}</strong></span>
+  </div>
+  
+  <ul class="ticket-items">
+    ${itemsHtml}
+  </ul>
+  
+  <div class="ticket-total">
+    <span>Total</span>
+    <span class="ticket-total-precio">$${total.toLocaleString()}</span>
+  </div>
+`;
+
 ticketDiv.innerHTML = html;
 
 // Función para imprimir el ticket en PDF usando jsPDF

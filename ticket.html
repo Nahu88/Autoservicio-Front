@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ticket de Compra</title>
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
@@ -12,17 +13,25 @@
   <script defer src="js/ticket.js"></script>
 </head>
 <body>
-  <header>
+  <header class="ticket-header">
     <button id="cambiar-tema" title="Cambiar tema">🌙</button>
-    
-    <a class="nav-link admin-link" href="http://localhost:4000/api/admin/login-view" target="_blank">🔐 Admin</a>
   </header>
-  <main>
-    <h2>Ticket de Compra</h2>
-    <div id="ticket"></div>
-    <button onclick="volverInicio()">Volver al inicio</button>
-    <button id="btn-pdf" class="outline">Descargar PDF</button>
-
+  
+  <main class="ticket-main">
+    <div class="ticket-success">
+      <div class="success-icon">✓</div>
+      <h2>¡Compra realizada!</h2>
+      <p>Gracias por tu compra</p>
+    </div>
+    
+    <div id="ticket" class="ticket-container">
+      <!-- Se llena con JS -->
+    </div>
+    
+    <div class="ticket-actions">
+      <button onclick="volverInicio()">🏠 Volver al inicio</button>
+      <button id="btn-pdf" class="ghost">📄 Descargar PDF</button>
+    </div>
   </main>
 </body>
 </html>
