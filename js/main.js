@@ -1,5 +1,5 @@
 // URL del backend (para conectar más adelante)
-const API_BASE = "http://localhost:4000/api";
+const API_BASE = "https://autoservicio-api-production.up.railway.app/api";
 
 // DOM
 const contenedorProductos = document.getElementById("contenedor-productos");
